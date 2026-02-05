@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#22c55e">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9603307834184143"
+crossorigin="anonymous"></script>
+
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(() => console.log("Service Worker kayıt edildi ✅"))
+      .catch(err => console.log("SW hata ❌", err));
+  });
+}
+</script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="TYT ve AYT net puanlarınıza göre sıralama tahmini yapın">
+    <title>TYT / AYT Net → Sıralama Tahmin Aracı</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiVFlUL0FZVCBTxLFyYWxhbWEgVGFobWluIEFyYWPEsSIsInNob3J0X25hbWUiOiJTxLFyYWxhbWEgVGFobWluIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMyNTYzZWIiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyUzRSUzQ3JlY3Qgd2lkdGg9JzE5MicgaGVpZ2h0PScxOTInIGZpbGw9JyUyMzI1NjNlYicvJTNFJTNDdGV4dCB4PScxMCcgeT0nMTAwJyBmb250LXNpemU9JzEwMCcgZmlsbD0nJTIzZmZmJyUzRVQlM0MvdGV4dCUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .exam-type {
+            margin-bottom: 30px;
+        }
+
+        .exam-type label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1f2937;
+        }
+
+        .exam-type select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .exam-type select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2563eb;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #4b5563;
+        }
+
+        .input-group input {
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .input-group small {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 15px;
+            border-left: 5px solid #2563eb;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .result-value.ranking {
+            color: #2563eb;
+        }
+
+        .disclaimer {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #92400e;
+        }
+
+        @media (max-width: 640px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-value {
+                font-size: 20px;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+<!-- ADSENSE ÜST REKLAM -->
+<ins class="adsbygoogle"
+     style="display:block; text-align:center; margin:20px 0;"
+     data-ad-client="ca-pub-9603307834184143"
+     data-ad-slot="6200134037"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+        <div class="header">
+            <h1>📊 TYT / AYT Net → Sıralama Tahmin Aracı</h1>
+            <p>Net puanlarınızı girerek tahmini sıralamanızı öğrenin</p>
+        </div>
+
+        <div class="content">
+            <div class="exam-type">
+                <label for="examType">Sınav Türü Seçin:</label>
+                <select id="examType">
+                    <option value="sayisal">Sayısal (MF)</option>
+                    <option value="esit">Eşit Ağırlık (EA)</option>
+                    <option value="sozel">Sözel (TM)</option>
+                </select>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Lise Diploma Notu (OBP)</div>
+                <div class="input-group">
+                    <label for="obpScore">Diploma Notunuz (50-100 arası)</label>
+                    <input type="number" id="obpScore" min="50" max="100" step="0.1" value="85" placeholder="Örn: 85.5">
+                    <small style="color: #6b7280; font-size: 12px; margin-top: 5px; display: block;">
+                        OBP puanınız sıralamanızı etkileyecektir. Bilmiyorsanız ortalama değer (85) bırakabilirsiniz.
+                    </small>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">TYT Netleri</div>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="tytTurkce">Türkçe (40)</label>
+                        <input type="number" id="tytTurkce" min="0" max="40" step="0.25" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="tytMatematik">Matematik (40)</label>
+                        <input type="number" id="tytMatematik" min="0" max="40" step="0.25" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="tytSosyal">Sosyal (20)</label>
+                        <input type="number" id="tytSosyal" min="0" max="20" step="0.25" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="tytFen">Fen (20)</label>
+                        <input type="number" id="tytFen" min="0" max="20" step="0.25" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">AYT Netleri</div>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="aytMatematik">Matematik (40)</label>
+                        <input type="number" id="aytMatematik" min="0" max="40" step="0.25" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="aytFizik">Fizik (14)</label>
+                        <input type="number" id="aytFizik" min="0" max="14" step="0.25" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="aytKimya">Kimya (13)</label>
+                        <input type="number" id="aytKimya" min="0" max="13" step="0.25" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="aytBiyoloji">Biyoloji (13)</label>
+                        <input type="number" id="aytBiyoloji" min="0" max="13" step="0.25" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="aytEdebiyat">Edebiyat (24)</label>
+                        <input type="number" id="aytEdebiyat" min="0" max="24" step="0.25" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="aytTarih">Tarih 1 (10)</label>
+                        <input type="number" id="aytTarih" min="0" max="10" step="0.25" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="aytCografya">Coğrafya 1 (6)</label>
+                        <input type="number" id="aytCografya" min="0" max="6" step="0.25" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateRanking()">
+                🎯 Sıralamayı Hesapla
+            </button>
+
+            <div class="results" id="results">
+                <div class="result-item">
+                    <div class="result-label">Toplam Net</div>
+                    <div class="result-value" id="totalNet">0</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Tahmini Sıralama</div>
+                    <div class="result-value ranking" id="estimatedRank">-</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Sıralama Aralığı</div>
+                    <div class="result-value" id="rankRange">-</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Yüzdelik Dilim</div>
+                    <div class="result-value" id="percentile">-</div>
+                </div>
+                <div class="disclaimer">
+                    ⚠️ <strong>Önemli:</strong> Bu sonuçlar tahmindir, resmi ÖSYM verisi değildir. Gerçek sıralamanız puan türüne, o yılki sınav zorluğuna ve diğer adayların performansına göre değişiklik gösterebilir.
+                </div>
+            </div>
+        </div>
+<!-- ADSENSE ALT REKLAM -->
+<ins class="adsbygoogle"
+     style="display:block; text-align:center; margin:20px 0;"
+     data-ad-client="ca-pub-9603307834184143"
+     data-ad-slot="6200134037"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+        <div class="footer">
+            Made with ❤️ for Turkish students
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ========================================
+         * GERÇEK ÖSYM PUAN HESAPLAMA SİSTEMİ
+         * ========================================
+         * 
+         * ÖSYM'nin resmi formüllerine göre:
+         * 1. Ham Puan = (Netler × Katsayılar) + 100
+         * 2. Puan Aralığı: 100-500
+         * 3. OBP = Diploma × 0.6
+         * 4. Yerleştirme = Ham Puan + OBP
+         */
+
+        // ========================================
+        // GERÇEK ÖSYM KATSAYILARI (2024 VERİLERİ)
+        // ========================================
+        
+        const CONFIG = {
+            totalCandidates: 2000000,
+            baseScore: 100, // ÖSYM herkese 100 puan veriyor
+            
+            // GERÇEK TYT KATSAYILARI
+            tyt: {
+                turkce: 1.32,
+                matematik: 1.32,
+                sosyal: 1.36,
+                fen: 1.36
+            },
+            
+            // GERÇEK AYT KATSAYILARI (PUAN TÜRÜNE GÖRE)
+            ayt: {
+                sayisal: {
+                    tytTurkce: 0.528,      // 1.32 * 0.4
+                    tytMatematik: 0.528,   // 1.32 * 0.4
+                    tytSosyal: 0.544,      // 1.36 * 0.4
+                    tytFen: 0.544,         // 1.36 * 0.4
+                    matematik: 3.0,
+                    fizik: 2.85,
+                    kimya: 3.07,
+                    biyoloji: 3.07,
+                    edebiyat: 0,
+                    tarih: 0,
+                    cografya: 0
+                },
+                esit: {
+                    tytTurkce: 0.528,
+                    tytMatematik: 0.528,
+                    tytSosyal: 0.544,
+                    tytFen: 0.544,
+                    matematik: 3.0,
+                    fizik: 0,
+                    kimya: 0,
+                    biyoloji: 0,
+                    edebiyat: 3.0,
+                    tarih: 2.8,
+                    cografya: 3.33
+                },
+                sozel: {
+                    tytTurkce: 0.528,
+                    tytMatematik: 0.528,
+                    tytSosyal: 0.544,
+                    tytFen: 0.544,
+                    matematik: 0,
+                    fizik: 0,
+                    kimya: 0,
+                    biyoloji: 0,
+                    edebiyat: 3.0,
+                    tarih: 2.8,
+                    cografya: 3.33
+                }
+            }
+        };
+
+        // ========================================
+        // HAM PUAN HESAPLAMA (ÖSYM SİSTEMİ)
+        // ========================================
+        
+        function calculateHamPuan(nets, fieldType) {
+            const aytKatsayilar = CONFIG.ayt[fieldType];
+            
+            // TYT kısmı (AYT için 0.4 ile çarpılmış)
+            const tytPuan = 
+                nets.tyt.turkce * aytKatsayilar.tytTurkce +
+                nets.tyt.matematik * aytKatsayilar.tytMatematik +
+                nets.tyt.sosyal * aytKatsayilar.tytSosyal +
+                nets.tyt.fen * aytKatsayilar.tytFen;
+            
+            // AYT kısmı
+            const aytPuan = 
+                nets.ayt.matematik * aytKatsayilar.matematik +
+                nets.ayt.fizik * aytKatsayilar.fizik +
+                nets.ayt.kimya * aytKatsayilar.kimya +
+                nets.ayt.biyoloji * aytKatsayilar.biyoloji +
+                nets.ayt.edebiyat * aytKatsayilar.edebiyat +
+                nets.ayt.tarih * aytKatsayilar.tarih +
+                nets.ayt.cografya * aytKatsayilar.cografya;
+            
+            // ÖSYM Formülü: Ham Puan = (Netler × Katsayılar) + 100
+            let hamPuan = tytPuan + aytPuan + CONFIG.baseScore;
+            
+            // Puanlar 100-500 arasında olmalı
+            hamPuan = Math.max(100, Math.min(500, hamPuan));
+            
+            return {
+                tytKatki: tytPuan,
+                aytKatki: aytPuan,
+                hamPuan: hamPuan
+            };
+        }
+
+        // ========================================
+        // OBP HESAPLAMA (ÖSYM SİSTEMİ)
+        // ========================================
+        
+        function calculateOBP(diplomaNotu) {
+            // ÖSYM Formülü: OBP = Diploma Notu × 0.6
+            return diplomaNotu * 0.6;
+        }
+
+        // ========================================
+        // YERLEŞTİRME PUANI HESAPLAMA
+        // ========================================
+        
+        function calculateYerlestirmePuani(hamPuan, obp) {
+            return hamPuan + obp;
+        }
+
+        // ========================================
+        // SIRALAMA TAHMİNİ (GERÇEKÇİ MODEL)
+        // ========================================
+        
+        function estimateRanking(yerlestirmePuani, fieldType) {
+            // Minimum ve maksimum yerleştirme puanları
+            const minYerlestirme = 100; 
+            const maxYerlestirme = 560; // Ham 500 + OBP 60
+            
+            // Normalize et (0-1 arası)
+            let normalized = (yerlestirmePuani - minYerlestirme) / (maxYerlestirme - minYerlestirme);
+            normalized = Math.max(0, Math.min(1, normalized));
+            
+            // Alan bazlı rekabet ayarı
+            let competitionFactor = 1.0;
+            if (fieldType === 'sayisal') {
+                competitionFactor = 1.08; // Sayısal daha rekabetçi
+            } else if (fieldType === 'esit') {
+                competitionFactor = 1.04;
+            }
+            
+            normalized = Math.min(1, normalized * competitionFactor);
+            
+            // Gerçekçi sıralama dağılımı (daha agresif)
+            let rank;
+            
+            if (yerlestirmePuani < 200) {
+                // Çok düşük (1.6M - 2M)
+                rank = 2000000 - ((yerlestirmePuani - 100) / 100) * 400000;
+            } else if (yerlestirmePuani < 280) {
+                // Düşük (800K - 1.6M)
+                const t = (yerlestirmePuani - 200) / 80;
+                rank = 1600000 - (Math.pow(t, 1.6) * 800000);
+            } else if (yerlestirmePuani < 340) {
+                // Orta-Düşük (200K - 800K)
+                const t = (yerlestirmePuani - 280) / 60;
+                rank = 800000 - (Math.pow(t, 2.0) * 600000);
+            } else if (yerlestirmePuani < 380) {
+                // Orta (50K - 200K)
+                const t = (yerlestirmePuani - 340) / 40;
+                rank = 200000 - (Math.pow(t, 2.3) * 150000);
+            } else if (yerlestirmePuani < 420) {
+                // İyi (10K - 50K)
+                const t = (yerlestirmePuani - 380) / 40;
+                rank = 50000 - (Math.pow(t, 2.6) * 40000);
+            } else if (yerlestirmePuani < 450) {
+                // Çok İyi (2K - 10K)
+                const t = (yerlestirmePuani - 420) / 30;
+                rank = 10000 - (Math.pow(t, 3.0) * 8000);
+            } else if (yerlestirmePuani < 480) {
+                // Mükemmel (200 - 2K)
+                const t = (yerlestirmePuani - 450) / 30;
+                rank = 2000 - (Math.pow(t, 3.5) * 1800);
+            } else {
+                // Elite (1 - 200)
+                const t = (yerlestirmePuani - 480) / 80;
+                rank = 200 - (Math.pow(t, 4.0) * 199);
+            }
+            
+            return Math.round(Math.max(1, Math.min(CONFIG.totalCandidates, rank)));
+        }
+
+        // ========================================
+        // SIRALAMA ARALIĞI HESAPLAMA
+        // ========================================
+        
+        function calculateRankRange(rank) {
+            let confidence;
+            if (rank <= 100) confidence = 0.60;
+            else if (rank <= 1000) confidence = 0.45;
+            else if (rank <= 10000) confidence = 0.30;
+            else if (rank <= 50000) confidence = 0.22;
+            else if (rank <= 200000) confidence = 0.18;
+            else if (rank <= 500000) confidence = 0.15;
+            else confidence = 0.12;
+            
+            const margin = Math.round(rank * confidence);
+            return {
+                min: Math.max(1, rank - margin),
+                max: Math.min(CONFIG.totalCandidates, rank + margin),
+                confidence: confidence
+            };
+        }
+
+        // ========================================
+        // ANA HESAPLAMA FONKSİYONU
+        // ========================================
+        
+        function calculateRanking() {
+            const fieldType = document.getElementById('examType').value;
+            
+            // Netleri al
+            const nets = {
+                tyt: {
+                    turkce: parseFloat(document.getElementById('tytTurkce').value) || 0,
+                    matematik: parseFloat(document.getElementById('tytMatematik').value) || 0,
+                    sosyal: parseFloat(document.getElementById('tytSosyal').value) || 0,
+                    fen: parseFloat(document.getElementById('tytFen').value) || 0
+                },
+                ayt: {
+                    matematik: parseFloat(document.getElementById('aytMatematik').value) || 0,
+                    fizik: parseFloat(document.getElementById('aytFizik').value) || 0,
+                    kimya: parseFloat(document.getElementById('aytKimya').value) || 0,
+                    biyoloji: parseFloat(document.getElementById('aytBiyoloji').value) || 0,
+                    edebiyat: parseFloat(document.getElementById('aytEdebiyat').value) || 0,
+                    tarih: parseFloat(document.getElementById('aytTarih').value) || 0,
+                    cografya: parseFloat(document.getElementById('aytCografya').value) || 0
+                }
+            };
+            
+            const diplomaNotu = parseFloat(document.getElementById('obpScore').value) || 85;
+            
+            // Toplam net hesabı
+            const totalTYT = nets.tyt.turkce + nets.tyt.matematik + nets.tyt.sosyal + nets.tyt.fen;
+            const totalAYT = nets.ayt.matematik + nets.ayt.fizik + nets.ayt.kimya + 
+                           nets.ayt.biyoloji + nets.ayt.edebiyat + nets.ayt.tarih + nets.ayt.cografya;
+            const totalNet = Math.round((totalTYT + totalAYT) * 100) / 100;
+            
+            // ÖSYM hesaplamaları
+            const puanlar = calculateHamPuan(nets, fieldType);
+            const obp = calculateOBP(diplomaNotu);
+            const yerlestirmePuani = calculateYerlestirmePuani(puanlar.hamPuan, obp);
+            const rank = estimateRanking(yerlestirmePuani, fieldType);
+            const rankRange = calculateRankRange(rank);
+            
+            // Yüzdelik dilim
+            const percentile = ((1 - rank / CONFIG.totalCandidates) * 100).toFixed(2);
+            
+            // Console debug
+            console.log('=== ÖSYM PUAN HESAPLAMA ===');
+            console.log('Alan:', fieldType);
+            console.log('Toplam Net:', totalNet);
+            console.log('Ham Puan:', puanlar.hamPuan.toFixed(2));
+            console.log('OBP:', obp.toFixed(2));
+            console.log('Yerleştirme Puanı:', yerlestirmePuani.toFixed(2));
+            console.log('Tahmini Sıralama:', rank);
+            console.log('===========================');
+            
+            // Sonuçları göster
+            document.getElementById('totalNet').textContent = totalNet.toFixed(2);
+            document.getElementById('estimatedRank').textContent = rank.toLocaleString('tr-TR');
+            document.getElementById('rankRange').textContent = 
+                `${rankRange.min.toLocaleString('tr-TR')} - ${rankRange.max.toLocaleString('tr-TR')}`;
+            document.getElementById('percentile').textContent = `Top ${percentile}%`;
+            
+            // Detaylı analiz
+            const guvenilirlik = rank <= 1000 ? "Düşük (çok rekabetçi)" : 
+                                rank <= 10000 ? "Orta (yüksek rekabet)" :
+                                rank <= 100000 ? "İyi" : 
+                                rank <= 500000 ? "Yüksek" : "Çok Yüksek";
+            
+            const obpEtkisi = (obp / yerlestirmePuani * 100).toFixed(1);
+            const obpMesaj = diplomaNotu >= 90 ? "Yüksek diploma notunuz avantaj sağladı! 🎓" :
+                            diplomaNotu <= 70 ? "Diploma notunuz düşük, net sayınızı artırın. 📚" :
+                            "Diploma notunuz orta seviyede katkı sağladı. ✅";
+            
+            const detailsHTML = `
+                <div class="result-item">
+                    <div class="result-label">Tahmin Güvenilirliği</div>
+                    <div class="result-value" style="font-size: 16px;">${guvenilirlik}</div>
+                </div>
+                <div class="result-item" style="background: #e0f2fe;">
+                    <div class="result-label">📊 Puan Detayları</div>
+                    <div style="font-size: 14px; color: #0c4a6e; margin-top: 5px;">
+                        <strong>Ham Puan:</strong> ${puanlar.hamPuan.toFixed(2)} / 500<br>
+                        <strong>OBP:</strong> ${obp.toFixed(2)} (Diploma: ${diplomaNotu})<br>
+                        <strong>Yerleştirme Puanı:</strong> ${yerlestirmePuani.toFixed(2)}<br>
+                        <strong>OBP Etkisi:</strong> %${obpEtkisi}
+                    </div>
+                </div>
+                <div class="result-item" style="background: #fef3c7;">
+                    <div class="result-label">💡 OBP Analizi</div>
+                    <div style="font-size: 14px; color: #92400e; margin-top: 5px;">
+                        ${obpMesaj}<br>
+                        <small>OBP = Diploma Notu × 0.6 = ${diplomaNotu} × 0.6 = ${obp.toFixed(2)}</small>
+                    </div>
+                </div>
+            `;
+            
+            let detailsContainer = document.getElementById('detailsContainer');
+            if (!detailsContainer) {
+                detailsContainer = document.createElement('div');
+                detailsContainer.id = 'detailsContainer';
+                document.querySelector('.results').appendChild(detailsContainer);
+            }
+            detailsContainer.innerHTML = detailsHTML;
+            
+            document.getElementById('results').classList.add('show');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Add enter key support for inputs
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    calculateRanking();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
